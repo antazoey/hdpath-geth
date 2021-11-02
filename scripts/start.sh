@@ -4,8 +4,7 @@ set -e
 
 clean() {
   blockchain_path="${1:-blockchain}"
-  rm -rf "${blockchain_path}/geth"
-  rm -rf "${blockchain_path}/keystore"
+  rm -rf "${blockchain_path}/"
 }
 
 create_genesis_json() {
@@ -26,7 +25,27 @@ init_blockchain() {
 
 start() {
   blockchain_path="${1:-blockchain}"
-  geth --http --http.addr localhost --http.port 8545 --http.api admin,debug,eth,miner,net,personal,txpool,web3 --ws --ws.addr 127.0.0.1 --ws.port 8546 --ws.api admin,debug,eth,miner,net,personal,txpool,web3 --datadir $blockchain_path --maxpeers 0 --networkid 1337 --port 30303 --ipcpath $blockchain_path/geth.ipc --verbosity 5 --unlock 0 --password pwd_file --nodiscover --mine --miner.threads 1 --allow-insecure-unlock
+  geth \
+    --http \
+    --http.addr localhost \
+    --http.port 8545 \
+    --http.api admin,debug,eth,miner,net,personal,txpool,web3 \
+    --ws \
+    --ws.addr 127.0.0.1 \
+    --ws.port 8546 \
+    --ws.api admin,debug,eth,miner,net,personal,txpool,web3 \
+    --datadir $blockchain_path \
+    --maxpeers 0 \
+    --networkid 1337 \
+    --port 30303 \
+    --ipcpath $blockchain_path/geth.ipc \
+    --verbosity 5 \
+    --unlock 0 \
+    --password pwd_file \
+    --nodiscover \
+    --mine \
+    --miner.threads 1 \
+    --allow-insecure-unlock
 }
 
 main() {

@@ -13,4 +13,4 @@ pip install -r requirements.txt
 make
 ```
 
-Optionally, set a MNEMONIC arg as well as NUM_OF_ACCOUNTS.
+Optionally, set a `MNEMONIC` arg as well as `NUM_OF_ACCOUNTS` when calling `make`.

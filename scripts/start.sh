@@ -16,6 +16,8 @@ create_genesis_json() {
 init_blockchain() {
   num_accounts="${1:?num accounts required at arg 1.}"
   mnemonic="${2:?Mnemonic required at arg 2.}"
+  rm -rf pwd_file
+  echo "this-is-not-a-secure-password" >> pwd_file
   create_genesis_json "${num_accounts}" "${mnemonic}"
   geth --datadir "${blockchain_path}" init ./genesis.json
 

@@ -7,25 +7,33 @@ clean() {
   rm -rf "${blockchain_path}/"
 }
 
-create_genesis_json() {
-  num_accounts="${1:?num accounts required at arg 1.}"
-  mnemonic="${2:?Mnemonic required at arg 2.}"
-  python scripts/create_genesis_file.py "${num_accounts}" "${mnemonic}"
+init_blockchain() {
+  blockchain_path="${1:-blockchain}"
+  mnemonic="${2:?Mnemonic required at arg 1.}"
+  num_accounts="${3:?num accounts required at arg 2.}"
+  consensus="${4:?The consensus algorithm requires at arg 3.}"
+  create_pwd_file
+  create_miner_account "${blockchain_path}" 
+  create_genesis_json "${blockchain_path}" "${mnemonic}" "${num_accounts}" "${consensus}"
+  geth --datadir "${blockchain_path}" init ./genesis.json
 }
 
-init_blockchain() {
-  num_accounts="${1:?num accounts required at arg 1.}"
-  mnemonic="${2:?Mnemonic required at arg 2.}"
-
-  # Create password file
+create_pwd_file() {
   rm -rf pwd_file
   echo "this-is-not-a-secure-password" >> pwd_file
+}
 
-  create_genesis_json "${num_accounts}" "${mnemonic}"
-  geth --datadir "${blockchain_path}" init ./genesis.json
-
-  # A least one account must exist for mining to work
+create_miner_account() {
+  blockchain_path="${1:-blockchain}"
   geth --datadir "${blockchain_path}" --password pwd_file account new
+}
+
+create_genesis_json() {
+  blockchain_path="${1:-blockchain}"
+  mnemonic="${2:?Mnemonic required at arg 2.}"
+  num_accounts="${3:?num accounts required at arg 3.}"
+  consensus="${4:?The consensus algorithm requires at arg 4.}"
+  python scripts/create_genesis_file.py "${blockchain_path}" "${mnemonic}" "${num_accounts}" "${consensus}"
 }
 
 start() {
@@ -55,10 +63,11 @@ start() {
 
 main() {
   blockchain_path="${1:-blockchain}"
-  num_accounts="${2:-10}"
-  mnemonic="${3:-test test test test test test test test test test test junk}"
+  mnemonic="${2:-test test test test test test test test test test test junk}"
+  num_accounts="${3:-10}"
+  consensus="${4:pow}"
   clean "${blockchain_path}"
-  init_blockchain "${num_accounts}" "${mnemonic}"
+  init_blockchain "${blockchain_path}" "${mnemonic}" "${num_accounts}" "${consensus}"
   start "${blockchain_path}"
 }
 
